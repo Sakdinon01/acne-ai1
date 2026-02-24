@@ -1,5 +1,4 @@
-const URL = "model/";
-
+const URL = "./";
 let model, maxPredictions;
 
 // โหลดโมเดล
@@ -8,9 +7,9 @@ async function loadModel() {
 
   try {
     model = await tmImage.load(
-      URL + "model.json",
-      URL + "metadata.json"
-    );
+  URL + "model.json",
+  URL + "metadata.json"
+);
 
     maxPredictions = model.getTotalClasses();
     document.getElementById("result").innerText = "โหลดโมเดลสำเร็จ ✅";
@@ -57,4 +56,5 @@ document.getElementById("imageUpload").addEventListener("change", async (e) => {
 
     document.getElementById("result").innerText = resultText;
   };
+
 });
