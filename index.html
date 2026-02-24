@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Acne Classifier</title>
+</head>
+
+<body onload="init()">
+
+  <h2>AI จำแนกประเภทสิว</h2>
+
+  <input type="file" accept="image/*" onchange="predictImage(event)">
+  <br><br>
+
+  <img id="preview" width="300">
+  <h3 id="result">กรุณาอัปโหลดรูป</h3>
+
+  <!-- TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <!-- Teachable Machine -->
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+  <script>
+    // ❗ ห้ามใช้ชื่อ URL
+    const MODEL_URL = "./tm-my-image-model/";
+    let model;
+
+    // โหลดโมเดล
+    async function init() {
+      try {
+        model = await tmImage.load(
+          MODEL_URL + "model.json",
+          MODEL_URL + "metadata.json"
+        );
+        document.getElementById("result").innerText = "โหลดโมเดลสำเร็จ ✅";
+        console.log("Model loaded");
+      } catch (e) {
+        console.error(e);
+        document.getElementById("result").innerText = "โหลดโมเดลไม่สำเร็จ ❌";
+      }
+    }
+
+    // ทำนายรูป
+    async function predictImage(event) {
+      if (!model) {
+        alert("กรุณาโหลดโมเดลก่อน");
+        return;
+      }
+
+      const file = event.target.files[0];
+      const img = document.getElementById("preview");
+
+      img.src = window.URL.createObjectURL(file);
+
+      img.onload = async () => {
+        const prediction = await model.predict(img);
+
+        console.log(prediction); // 👈 ดูผลทั้งหมดใน Console
+
+        prediction.sort((a, b) => b.probability - a.probability);
+        const best = prediction[0];
+
+        document.getElementById("result").innerHTML =
+          `เป็น <b>${best.className}</b><br>
+           ความมั่นใจ ${(best.probability * 100).toFixed(2)}%`;
+      };
+    }
+  </script>
+
+</body>
+</html>
