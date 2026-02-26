@@ -13,7 +13,7 @@
   <br><br>
 
   <img id="preview" width="300">
-  <h3 id="result">กรุณาอัปโหลดรูป</h3>
+  <h3 id="result">กำลังโหลดโมเดล...</h3>
 
   <!-- TensorFlow.js -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
@@ -21,8 +21,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
 
   <script>
-    // ❗ ห้ามใช้ชื่อ URL
-    const MODEL_URL = "./tm-my-image-model/";
+    // ✅ โมเดลอยู่ root ของเว็บ
+    const MODEL_URL = "./";
     let model;
 
     // โหลดโมเดล
@@ -50,12 +50,13 @@
       const file = event.target.files[0];
       const img = document.getElementById("preview");
 
-      img.src = window.URL.createObjectURL(file);
+      // ✅ ใช้แบบนี้ ปลอดภัยทุกเบราว์เซอร์
+      img.src = URL.createObjectURL(file);
 
       img.onload = async () => {
         const prediction = await model.predict(img);
 
-        console.log(prediction); // 👈 ดูผลทั้งหมดใน Console
+        console.log("Prediction:", prediction); // 👈 ดูใน Console
 
         prediction.sort((a, b) => b.probability - a.probability);
         const best = prediction[0];
